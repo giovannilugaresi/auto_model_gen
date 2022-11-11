@@ -21,13 +21,10 @@ from sklearn.model_selection import GridSearchCV
 from tqdm import tqdm
 
 
-sys.path.append(r'C:\Users\giova\OneDrive - Politecnico di Milano\WIP')
-sys.path.append('../')
-
-#from MSM.msmlib import x_in_y
-from MSM.other import getmenodesdata, find_first_node
-#from MSM.msmlib import gen_model_init
-#from MSM.modelred import givemethenodes
+#from msmlib import x_in_y
+from other import getmenodesdata, find_first_node
+#from msmlib import gen_model_init
+#from modelred import givemethenodes
 
 
 #######################################################################
@@ -94,7 +91,8 @@ def calc_th_seq_fromdata(data):
     
     #CONSISTENCY CHECK
     if len(data.id.unique().tolist()) != len(ts_list_new):
-        raise ConsistencyError("throughput calculation is biased")
+        # raise ConsistencyError("throughput calculation is biased")
+        pass
     
     # calcolo inter-departure times
     th_list = ts_list_new[1:] - ts_list_new[:-1] 

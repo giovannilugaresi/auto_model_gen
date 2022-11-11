@@ -27,5 +27,5 @@
         "threshold_arcs": 0.5
     },
     "modelscores": {},
-    "datapath": "C:\\Users\\THE FACTORY PC 2\\OneDrive - Politecnico di Milano\\WIP\\MSM_experiments\\MSM_TEST11_RTS-Demo\\logs\\eventlog2.csv"
+    "datapath": "eventlog2.csv"
 }

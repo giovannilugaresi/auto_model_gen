@@ -31,33 +31,36 @@ import os
 # import strict_rfc3339 # per conversione event log
 import seaborn as sns
 
-sys.path.append(r'C:\Users\THE FACTORY PC 2\OneDrive - Politecnico di Milano\WIP')
-sys.path.append('../')
-os.chdir(r'C:\Users\THE FACTORY PC 2\OneDrive - Politecnico di Milano\WIP')
+from msmlib import gen_model_init, checktype
+#from modelscores import score_calc
+#from modelred import local_search
+from msm_parameval import fit_kernel, gen_samples, find_flowtimes, calc_th_fromdata, calc_st_fromdata, gen_from_ecdf
+from other import find_ordered_arcs
+from msm_plots import plot_model
 
-from MSM.msmlib import gen_model_init, checktype
-#from MSM.modelscores import score_calc 
-# from MSM.modelred import local_search
-from MSM.msm_parameval import fit_kernel, gen_samples, find_flowtimes, calc_th_fromdata, calc_st_fromdata, gen_from_ecdf
-from MSM.other import find_ordered_arcs
-from MSM.msm_plots import plot_model
+# %% SUPPORT FUNCTION
+
+def convert(o):
+    '''
+    workaround to solve an issue saving numpy integers to json
+    https://stackoverflow.com/questions/11942364/typeerror-integer-is-not-json-serializable-when-serializing-json-in-python
+    '''
+    if isinstance(o, np.generic): return o.item()
+    raise TypeError
 
 # %% INPUT FILES READ
 
 # Load parameters
-doe = pd.read_excel(r'C:\Users\THE FACTORY PC 2\OneDrive - Politecnico di Milano\WIP\MSM_experiments\MSM_TEST11_RTS-Demo\doe.xlsx', header='infer')
+doe = pd.read_excel('doe.xlsx', header='infer')
 
 # Load config file
-with open(r'C:\Users\THE FACTORY PC 2\OneDrive - Politecnico di Milano\WIP\MSM_experiments\MSM_TEST11_RTS-Demo\config.json', encoding='utf-8') as f:
+with open('config2.json', encoding='utf-8') as f:
     config = json.load(f)
 
 # %% INPUTS
 
 # for parameters read i need only 1 row
 i = 0
-
-# la replica coincide con il log che si chiama "rep#" nella cartella "logs"
-#config["datapath"] = r"C:\Users\giova\OneDrive - Politecnico di Milano\WIP\MSM_experiments\FLOWLINE_NEW_Journal\logs\log"+str(doe['rep'][i])+".txt"
 
 # ws vettore
 config['modelred']['weights']['ws'] = [ doe['w1'][i], doe['w2'][i], doe['w3'][i], doe['w4'][i], doe['w5'][i],  doe['w6'][i]]
@@ -139,7 +142,7 @@ max(cumsum)           # NUMERO DI PALLET NEL SISTEMA
 data = ordata
 #data['id'] = ordata['id_new']
 
-results_path = r"C:\Users\THE FACTORY PC 2\OneDrive - Politecnico di Milano\WIP\MSM_experiments\MSM_TEST11_RTS-Demo\results"
+results_path = "results"
 
 #generate initial model
 model, unique_list, tracetoremove, id_trace_record = gen_model_init(data, config, tag = True)
@@ -147,12 +150,12 @@ a = plot_model(model, results_path+"\model_figure")
 
 
 #SAVE MODEL
-with open(results_path+'\\model.pickle', 'wb') as handle:
+with open(results_path+'\model.pickle', 'wb') as handle:
     pickle.dump(model, handle, protocol=pickle.HIGHEST_PROTOCOL)
         
 # SAVE MODEL AS JSON
 with open(results_path+'\model.json', 'w', encoding='utf-8') as f:
-    json.dump(model, f, ensure_ascii=False, indent=4)
+    json.dump(model, f, ensure_ascii=False, indent=4, default=convert)
 
 
         
@@ -160,7 +163,7 @@ with open(results_path+'\model.json', 'w', encoding='utf-8') as f:
     
 model_w_times = find_flowtimes(model, data, tag = True, aggregate = False)
 
-from MSM.msm_parameval import calc_nodes_dist
+from msm_parameval import calc_nodes_dist
 
 model_w_times = calc_nodes_dist(model_w_times, data)
 
@@ -171,7 +174,7 @@ for node in model_wo_times['nodes']:
     node['flowtimes'] = []
 
 with open(results_path+'\model.json', 'w', encoding='utf-8') as f:
-    json.dump(model_wo_times, f, ensure_ascii = False, indent=4)
+    json.dump(model_wo_times, f, ensure_ascii = False, indent=4, default=convert)
 
 
 # %% POST PROCESSING- PLOT PROCESSING TIMES 

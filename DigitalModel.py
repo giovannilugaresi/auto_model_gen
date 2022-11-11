@@ -15,7 +15,7 @@ from manpy.simulation.Globals import G
 from manpy.simulation.Order import Order
 import manpy.simulation.PrintRoute as PrintRoute
 import manpy.simulation.ExcelHandler as ExcelHandler
-from manpy.simulation.ProcessingTimeList import ProcessingTimeList
+#from manpy.simulation.ProcessingTimeList import ProcessingTimeList
 from manpy.simulation.RandomNumberGenerator import RandomNumberGenerator
 import time
 from random import Random
@@ -936,7 +936,7 @@ class DigitalModel:
             for obj in self.ObjectList:       # loop through all the object in the model
                 if mach == obj.id:      # if we find the machine in the model with the same ID
                     condition = True
-                    obj.procTimeVal = ProcessingTimeList(None, procTimes)   # assign the list to the machine
+                    #obj.procTimeVal = ProcessingTimeList(None, procTimes)   # assign the list to the machine
                     obj.fromListFlag = True
             if not condition:
                 print(f'ERROR: it exist no object named {mach!r}, the columns headers should be named like the object'
